@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.roborazzi)
 }
 
 android {
@@ -26,6 +27,16 @@ android {
     buildFeatures {
         compose = true
     }
+
+    testOptions {
+        // Robolectric screenshot tests need the app's resources.
+        unitTests.isIncludeAndroidResources = true
+    }
+}
+
+roborazzi {
+    // Reference screenshots live with the tests. verifyRoborazziDebug compares against them.
+    outputDir.set(file("src/test/screenshots"))
 }
 
 dependencies {
@@ -40,7 +51,12 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.kotlinx.serialization.core)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.androidx.compose.ui.test.junit4)
 }

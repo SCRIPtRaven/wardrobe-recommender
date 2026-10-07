@@ -25,12 +25,16 @@ jobs:
         with:
           cache-provider: basic
 
-      - name: Build, unit tests and lint
-        run: ./gradlew assembleDebug testDebugUnitTest lintDebug
+      # verifyRoborazziDebug runs all unit tests and compares screenshots
+      # with the references in app/src/test/screenshots.
+      - name: Build, unit tests, screenshot tests and lint
+        run: ./gradlew assembleDebug verifyRoborazziDebug lintDebug
 
       - name: Upload reports
         if: failure()
         uses: actions/upload-artifact@v7
         with:
           name: reports
-          path: app/build/reports/
+          path: |
+            app/build/reports/
+            app/build/outputs/roborazzi/
