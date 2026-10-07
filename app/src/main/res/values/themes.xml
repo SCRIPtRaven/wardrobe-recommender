@@ -1,0 +1,4 @@
+<resources>
+    <!-- Window theme shown before Compose draws. Compose sets the app's colors. -->
+    <style name="Theme.Clankdrobe" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
