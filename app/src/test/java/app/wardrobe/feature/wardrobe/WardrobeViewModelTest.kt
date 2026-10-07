@@ -23,12 +23,14 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class WardrobeViewModelTest {
 
+    private lateinit var repository: InMemoryWardrobeRepository
     private lateinit var viewModel: WardrobeViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(UnconfinedTestDispatcher())
-        viewModel = WardrobeViewModel(InMemoryWardrobeRepository(SampleData.items))
+        repository = InMemoryWardrobeRepository(SampleData.items)
+        viewModel = WardrobeViewModel(repository)
     }
 
     @After
@@ -77,5 +79,15 @@ class WardrobeViewModelTest {
         val state = loaded()
         assertEquals(SampleData.items.map { it.color }.toSet(), state.availableColors.toSet())
         assertEquals(state.availableColors.sorted(), state.availableColors)
+    }
+
+    @Test
+    fun selectedColorStaysInTheSheetAfterItsLastItemIsDeleted() = runTest {
+        viewModel.toggleColor(ItemColor.BURGUNDY)
+        repository.delete("burgundy-sweater")
+        val state = loaded()
+        assertTrue(state.items.isEmpty())
+        assertTrue(ItemColor.BURGUNDY in state.filter.colors)
+        assertTrue(ItemColor.BURGUNDY in state.availableColors)
     }
 }

@@ -20,7 +20,8 @@ sealed interface WardrobeUiState {
     /**
      * @param items the items that match [filter], grouped by category and sorted by name.
      * @param hasAnyItems false when the wardrobe itself is empty, as opposed to the filter matching nothing.
-     * @param availableColors the colors that appear in the wardrobe, offered in the filter sheet.
+     * @param availableColors the colors offered in the filter sheet: those in the wardrobe, plus any
+     *   selected color whose last item was deleted, so the user can still unselect it.
      */
     data class Loaded(
         val items: List<ClothingItem>,
@@ -39,7 +40,7 @@ class WardrobeViewModel(repository: WardrobeRepository) : ViewModel() {
             items = items.filter(filter::matches).sortedWith(compareBy({ it.category }, { it.name })),
             filter = filter,
             hasAnyItems = items.isNotEmpty(),
-            availableColors = items.map { it.color }.distinct().sorted(),
+            availableColors = (items.map { it.color } + filter.colors).distinct().sorted(),
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), WardrobeUiState.Loading)
 
