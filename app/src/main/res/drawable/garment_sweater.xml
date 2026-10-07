@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder garment illustration. The white fill takes the item's color when drawn with a Modulate tint. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M36,17 L22,23 L14,36 L9,72 L19,74 L26,46 L27,86 L73,86 L74,46 L81,74 L91,72 L86,36 L78,23 L64,17 C61,22 56,25 50,25 C44,25 39,22 36,17 Z"
+        android:strokeColor="#3B3631"
+        android:strokeLineJoin="round"
+        android:strokeWidth="2.5" />
+    <path
+        android:pathData="M39,20 C42,25.5 46,28 50,28 C54,28 58,25.5 61,20 M27,80 L73,80 M10,66 L20,68 M90,66 L80,68 M33,80 L33,86 M39,80 L39,86 M45,80 L45,86 M51,80 L51,86 M57,80 L57,86 M63,80 L63,86 M69,80 L69,86"
+        android:strokeColor="#3B3631"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="1.8" />
+</vector>
