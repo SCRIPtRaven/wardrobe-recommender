@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             WardrobeTheme {
-                WardrobeApp()
+                WardrobeApp((application as WardrobeApplication).container)
             }
         }
     }

@@ -22,19 +22,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import app.wardrobe.AppContainer
 import app.wardrobe.R
+import app.wardrobe.feature.wardrobe.WardrobeScreen
+import app.wardrobe.feature.wardrobe.WardrobeViewModel
 
 /** The app's root: the bottom bar and the screen of the selected tab. */
 @Composable
-fun WardrobeApp() {
+fun WardrobeApp(container: AppContainer) {
     val navigationState = rememberNavigationState(startRoute = WardrobeRoute, topLevelRoutes = TopLevelRoutes)
     val navigator = remember(navigationState) { Navigator(navigationState) }
 
     val entryProvider = entryProvider<NavKey> {
-        entry<WardrobeRoute> { TabPlaceholder(R.string.tab_wardrobe) }
+        entry<WardrobeRoute> {
+            WardrobeScreen(
+                viewModel = viewModel { WardrobeViewModel(container.wardrobeRepository) },
+                // TODO: open the item detail and add item screens once plan steps 7 and 8 add them.
+                onItemClick = {},
+                onAddItem = {},
+            )
+        }
         entry<OutfitsRoute> { TabPlaceholder(R.string.tab_outfits) }
         entry<SettingsRoute> { TabPlaceholder(R.string.tab_settings) }
     }

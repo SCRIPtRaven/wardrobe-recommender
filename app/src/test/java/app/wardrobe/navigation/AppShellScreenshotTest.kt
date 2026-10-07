@@ -1,10 +1,9 @@
 package app.wardrobe.navigation
 
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onRoot
-import app.wardrobe.ui.theme.WardrobeTheme
+import app.wardrobe.AppContainer
+import app.wardrobe.testing.captureInTheme
 import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
-import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,13 +18,8 @@ class AppShellScreenshotTest {
     val composeRule = createComposeRule()
 
     @Test
-    fun light() = capture(darkTheme = false)
+    fun light() = composeRule.captureInTheme { WardrobeApp(AppContainer()) }
 
     @Test
-    fun dark() = capture(darkTheme = true)
-
-    private fun capture(darkTheme: Boolean) {
-        composeRule.setContent { WardrobeTheme(darkTheme = darkTheme) { WardrobeApp() } }
-        composeRule.onRoot().captureRoboImage()
-    }
+    fun dark() = composeRule.captureInTheme(darkTheme = true) { WardrobeApp(AppContainer()) }
 }
