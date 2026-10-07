@@ -10,8 +10,8 @@ android {
 
     defaultConfig {
         applicationId = "app.wardrobe"
-        // Navigation 3 1.2.0 requires API 24.
-        minSdk = 24
+        // API 26 has java.time built in. Navigation 3 1.2.0 alone would allow 24.
+        minSdk = 26
         targetSdk = 37
         versionCode = 1
         versionName = "0.1.0"
