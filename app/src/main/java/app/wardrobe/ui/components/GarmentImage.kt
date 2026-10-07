@@ -20,6 +20,12 @@ import app.wardrobe.domain.model.ItemColor
 import app.wardrobe.ui.theme.WardrobeTheme
 
 /**
+ * Fixed light background behind garment images in both themes, like a studio backdrop.
+ * Dark garments stay visible on it in dark theme.
+ */
+val GarmentBackdrop = Color(0xFFEFE9E2)
+
+/**
  * Placeholder illustration of [garment] in [color], shown until items have photos.
  *
  * The drawables have a white fill and a dark outline. A Modulate tint multiplies them by [color],

@@ -4,4 +4,65 @@
     <string name="tab_wardrobe">Wardrobe</string>
     <string name="tab_outfits">Outfits</string>
     <string name="tab_settings">Settings</string>
+
+    <string name="action_done">Done</string>
+
+    <string name="wardrobe_add_item">Add item</string>
+    <string name="wardrobe_all">All</string>
+    <string name="wardrobe_filters">Filters</string>
+    <string name="wardrobe_filters_active">Filters, some applied</string>
+    <string name="wardrobe_filter_color">Color</string>
+    <string name="wardrobe_filter_season">Season</string>
+    <string name="wardrobe_clear_all">Clear all</string>
+    <string name="wardrobe_clear_filters">Clear filters</string>
+    <string name="wardrobe_empty_title">Your wardrobe is empty</string>
+    <string name="wardrobe_empty_body">Add the clothes you own to get outfit suggestions from them.</string>
+    <string name="wardrobe_no_match_title">No items match</string>
+    <string name="wardrobe_no_match_body">Try another category or fewer filters.</string>
+
+    <string name="category_tops">Tops</string>
+    <string name="category_bottoms">Bottoms</string>
+    <string name="category_footwear">Footwear</string>
+    <string name="category_outerwear">Outerwear</string>
+
+    <string name="garment_t_shirt">T-shirt</string>
+    <string name="garment_shirt">Shirt</string>
+    <string name="garment_sweater">Sweater</string>
+    <string name="garment_jeans">Jeans</string>
+    <string name="garment_trousers">Trousers</string>
+    <string name="garment_shorts">Shorts</string>
+    <string name="garment_skirt">Skirt</string>
+    <string name="garment_sneakers">Sneakers</string>
+    <string name="garment_boots">Boots</string>
+    <string name="garment_jacket">Jacket</string>
+    <string name="garment_coat">Coat</string>
+
+    <string name="color_white">White</string>
+    <string name="color_cream">Cream</string>
+    <string name="color_beige">Beige</string>
+    <string name="color_camel">Camel</string>
+    <string name="color_brown">Brown</string>
+    <string name="color_grey">Grey</string>
+    <string name="color_black">Black</string>
+    <string name="color_navy">Navy</string>
+    <string name="color_denim">Denim</string>
+    <string name="color_light_blue">Light blue</string>
+    <string name="color_blue">Blue</string>
+    <string name="color_green">Green</string>
+    <string name="color_olive">Olive</string>
+    <string name="color_yellow">Yellow</string>
+    <string name="color_orange">Orange</string>
+    <string name="color_red">Red</string>
+    <string name="color_burgundy">Burgundy</string>
+    <string name="color_pink">Pink</string>
+    <string name="color_purple">Purple</string>
+
+    <string name="season_spring">Spring</string>
+    <string name="season_summer">Summer</string>
+    <string name="season_autumn">Autumn</string>
+    <string name="season_winter">Winter</string>
+
+    <string name="warmth_light">Light</string>
+    <string name="warmth_medium">Medium</string>
+    <string name="warmth_warm">Warm</string>
 </resources>
