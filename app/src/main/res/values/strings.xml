@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Clankdrobe</string>
+
+    <string name="tab_wardrobe">Wardrobe</string>
+    <string name="tab_outfits">Outfits</string>
+    <string name="tab_settings">Settings</string>
 </resources>
