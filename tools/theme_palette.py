@@ -1,0 +1,161 @@
+"""Generate the Material 3 color roles in app/src/main/java/app/wardrobe/ui/theme/Color.kt.
+
+Each key color is a CIELAB hue and chroma. A role takes a key color at a
+Material 3 tone, where tone is CIELAB L*. Chroma is reduced until the color
+fits in sRGB. The script writes Color.kt and prints a WCAG contrast report
+for the text and background pairs the app uses. It exits with status 1 if
+any pair is below 4.5:1.
+
+Run from the repo root: python3 tools/theme_palette.py
+"""
+
+import math
+from pathlib import Path
+
+OUTPUT = Path(__file__).resolve().parent.parent / "app/src/main/java/app/wardrobe/ui/theme/Color.kt"
+
+# Key colors as (hue in degrees, chroma), measured from the seed colors
+# terracotta #9A4A2E, olive #5F6B3A, slate blue #4F6378 and cream #FBF7F2.
+KEYS = {
+    "primary": (46.0, 44.0),
+    "secondary": (117.0, 29.0),
+    "tertiary": (262.0, 15.0),
+    "error": (30.0, 60.0),
+    "neutral": (80.0, 3.0),
+    "neutralVariant": (65.0, 9.0),
+}
+
+# Material 3 role to (key, light tone, dark tone).
+ROLES = {
+    "primary": ("primary", 40, 80),
+    "onPrimary": ("primary", 100, 20),
+    "primaryContainer": ("primary", 90, 30),
+    "onPrimaryContainer": ("primary", 10, 90),
+    "inversePrimary": ("primary", 80, 40),
+    "secondary": ("secondary", 40, 80),
+    "onSecondary": ("secondary", 100, 20),
+    "secondaryContainer": ("secondary", 90, 30),
+    "onSecondaryContainer": ("secondary", 10, 90),
+    "tertiary": ("tertiary", 40, 80),
+    "onTertiary": ("tertiary", 100, 20),
+    "tertiaryContainer": ("tertiary", 90, 30),
+    "onTertiaryContainer": ("tertiary", 10, 90),
+    "error": ("error", 40, 80),
+    "onError": ("error", 100, 20),
+    "errorContainer": ("error", 90, 30),
+    "onErrorContainer": ("error", 10, 90),
+    "background": ("neutral", 98, 6),
+    "onBackground": ("neutral", 10, 90),
+    "surface": ("neutral", 98, 6),
+    "onSurface": ("neutral", 10, 90),
+    "surfaceVariant": ("neutralVariant", 90, 30),
+    "onSurfaceVariant": ("neutralVariant", 30, 80),
+    "outline": ("neutralVariant", 50, 60),
+    "outlineVariant": ("neutralVariant", 80, 30),
+    "inverseSurface": ("neutral", 20, 90),
+    "inverseOnSurface": ("neutral", 95, 20),
+    "surfaceDim": ("neutral", 87, 6),
+    "surfaceBright": ("neutral", 98, 24),
+    "surfaceContainerLowest": ("neutral", 100, 4),
+    "surfaceContainerLow": ("neutral", 96, 10),
+    "surfaceContainer": ("neutral", 94, 12),
+    "surfaceContainerHigh": ("neutral", 92, 17),
+    "surfaceContainerHighest": ("neutral", 90, 22),
+}
+
+# Foreground and background pairs that must reach WCAG AA (4.5:1) for text.
+CONTRAST_PAIRS = [
+    ("onPrimary", "primary"),
+    ("onPrimaryContainer", "primaryContainer"),
+    ("onSecondary", "secondary"),
+    ("onSecondaryContainer", "secondaryContainer"),
+    ("onTertiary", "tertiary"),
+    ("onTertiaryContainer", "tertiaryContainer"),
+    ("onError", "error"),
+    ("onErrorContainer", "errorContainer"),
+    ("onSurface", "surface"),
+    ("onSurfaceVariant", "surface"),
+    ("onSurfaceVariant", "surfaceVariant"),
+    ("onSurface", "surfaceContainerHighest"),
+    ("primary", "surface"),
+    ("inverseOnSurface", "inverseSurface"),
+]
+
+
+def lab_to_srgb(lightness, a, b):
+    """CIELAB (D65) to sRGB components in 0..1, possibly out of range."""
+    fy = (lightness + 16) / 116
+    fx = fy + a / 500
+    fz = fy - b / 200
+
+    def f_inv(t):
+        return t**3 if t**3 > 216 / 24389 else (116 * t - 16) / (24389 / 27)
+
+    x, y, z = 0.95047 * f_inv(fx), 1.0 * f_inv(fy), 1.08883 * f_inv(fz)
+    linear = (
+        3.2404542 * x - 1.5371385 * y - 0.4985314 * z,
+        -0.9692660 * x + 1.8760108 * y + 0.0415560 * z,
+        0.0556434 * x - 0.2040259 * y + 1.0572252 * z,
+    )
+
+    def gamma(c):
+        return 12.92 * c if c <= 0.0031308 else 1.055 * c ** (1 / 2.4) - 0.055
+
+    return tuple(gamma(c) if c > 0 else c for c in linear)
+
+
+def tone(hue, chroma, lightness):
+    """Hex color at L* = lightness, with chroma reduced until it fits in sRGB."""
+    while True:
+        a = chroma * math.cos(math.radians(hue))
+        b = chroma * math.sin(math.radians(hue))
+        rgb = lab_to_srgb(lightness, a, b)
+        if all(-1e-6 <= c <= 1 + 1e-6 for c in rgb) or chroma <= 0:
+            return "#%02X%02X%02X" % tuple(round(min(max(c, 0), 1) * 255) for c in rgb)
+        chroma -= 0.5
+
+
+def luminance(hex_color):
+    def channel(v):
+        c = int(v, 16) / 255
+        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+
+    r, g, b = (channel(hex_color[i : i + 2]) for i in (1, 3, 5))
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def contrast(fg, bg):
+    hi, lo = sorted((luminance(fg), luminance(bg)), reverse=True)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def scheme(index):
+    return {role: tone(*KEYS[key], tones[index]) for role, (key, *tones) in ROLES.items()}
+
+
+def main():
+    schemes = {"Light": scheme(0), "Dark": scheme(1)}
+    lines = [
+        "// Generated by tools/theme_palette.py. Edit the script and rerun it instead of editing this file.",
+        "package app.wardrobe.ui.theme",
+        "",
+        "import androidx.compose.ui.graphics.Color",
+    ]
+    for name, colors in schemes.items():
+        lines.append("")
+        for role, value in colors.items():
+            const = role[0].upper() + role[1:]
+            lines.append(f"internal val {const}{name} = Color(0xFF{value[1:]})")
+    OUTPUT.write_text("\n".join(lines) + "\n")
+    print(f"Wrote {OUTPUT}")
+    failures = 0
+    for name, colors in schemes.items():
+        for fg, bg in CONTRAST_PAIRS:
+            ratio = contrast(colors[fg], colors[bg])
+            failures += ratio < 4.5
+            print(f"{name:5} {fg} on {bg}: {ratio:.2f}{'  FAIL' if ratio < 4.5 else ''}")
+    raise SystemExit(1 if failures else 0)
+
+
+if __name__ == "__main__":
+    main()
