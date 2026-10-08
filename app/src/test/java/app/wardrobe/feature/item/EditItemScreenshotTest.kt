@@ -1,0 +1,35 @@
+package app.wardrobe.feature.item
+
+import androidx.compose.ui.test.junit4.createComposeRule
+import app.wardrobe.data.SampleData
+import app.wardrobe.testing.captureInTheme
+import app.wardrobe.testing.captureScreenInTheme
+import com.github.takahirom.roborazzi.RobolectricDeviceQualifiers
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+
+@RunWith(RobolectricTestRunner::class)
+@Config(qualifiers = RobolectricDeviceQualifiers.Pixel7)
+class EditItemScreenshotTest {
+
+    @get:Rule
+    val composeRule = createComposeRule()
+
+    private val editing = EditItemUiState.Editing(
+        form = SampleData.items.first { it.id == "denim-jacket" }.toForm(),
+        hasChanges = true,
+    )
+
+    @Test
+    fun editing() = composeRule.captureInTheme {
+        EditItemContent(editing, onClose = {}, onFormChange = {}, onSave = {})
+    }
+
+    @Test
+    fun discardDialog() = composeRule.captureScreenInTheme {
+        EditItemContent(editing, onClose = {}, onFormChange = {}, onSave = {}, showDiscardDialogInitially = true)
+    }
+}

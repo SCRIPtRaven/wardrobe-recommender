@@ -56,6 +56,11 @@
     <string name="add_item_discard_body">What you entered will be lost.</string>
     <string name="add_item_keep_editing">Keep editing</string>
 
+    <string name="edit_item_title">Edit item</string>
+    <string name="edit_item_save">Save changes</string>
+    <string name="edit_item_discard_title">Discard changes?</string>
+    <string name="edit_item_discard_body">Your edits to this item will be lost.</string>
+
     <string name="form_suggestion_hint">Suggested from your photo. Change anything that is wrong.</string>
     <string name="form_name">Name</string>
     <string name="form_name_error">Enter a name</string>
