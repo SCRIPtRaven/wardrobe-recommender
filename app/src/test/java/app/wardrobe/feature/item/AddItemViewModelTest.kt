@@ -1,0 +1,113 @@
+package app.wardrobe.feature.item
+
+import app.wardrobe.data.InMemoryWardrobeRepository
+import app.wardrobe.domain.model.Garment
+import app.wardrobe.domain.model.ItemColor
+import app.wardrobe.domain.model.ItemSuggestion
+import app.wardrobe.domain.model.Season
+import app.wardrobe.domain.model.Warmth
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class AddItemViewModelTest {
+
+    private val suggestion = ItemSuggestion(Garment.SWEATER, ItemColor.GREEN)
+    private lateinit var repository: InMemoryWardrobeRepository
+    private lateinit var viewModel: AddItemViewModel
+
+    @Before
+    fun setUp() {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+        repository = InMemoryWardrobeRepository(emptyList())
+        viewModel = AddItemViewModel(
+            repository = repository,
+            recognize = { suggestion },
+            defaultName = { garment, color -> "$color $garment" },
+            newId = { "new-id" },
+        )
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    private fun form() = (viewModel.step.value as AddItemStep.Details).form
+
+    @Test
+    fun startsAtSourceChoice() {
+        assertEquals(AddItemStep.ChooseSource, viewModel.step.value)
+    }
+
+    @Test
+    fun recognitionPrefillsTheSuggestionAndADefaultName() {
+        viewModel.recognizePhoto()
+        val form = form()
+        assertEquals(Garment.SWEATER, form.garment)
+        assertEquals(ItemColor.GREEN, form.color)
+        assertEquals(suggestion, form.suggestion)
+        assertEquals("GREEN SWEATER", form.name)
+        assertTrue(form.seasons.isEmpty())
+    }
+
+    @Test
+    fun changingTheColorRenamesWhileTheNameIsUntouched() {
+        viewModel.recognizePhoto()
+        viewModel.setColor(ItemColor.NAVY)
+        assertEquals("NAVY SWEATER", form().name)
+    }
+
+    @Test
+    fun aTypedNameIsKept() {
+        viewModel.recognizePhoto()
+        viewModel.setName("My jumper")
+        viewModel.setGarment(Garment.COAT)
+        assertEquals("My jumper", form().name)
+    }
+
+    @Test
+    fun saveRejectsABlankNameAndShowsErrors() = runTest {
+        viewModel.recognizePhoto()
+        viewModel.setName("   ")
+        viewModel.toggleSeason(Season.WINTER)
+        assertNull(viewModel.save())
+        assertTrue(form().showErrors)
+        assertTrue(repository.items.first().isEmpty())
+    }
+
+    @Test
+    fun saveRejectsAnItemWithoutSeasons() = runTest {
+        viewModel.recognizePhoto()
+        assertNull(viewModel.save())
+        assertTrue(form().seasonsError)
+    }
+
+    @Test
+    fun saveAddsTheItemWithATrimmedName() = runTest {
+        viewModel.recognizePhoto()
+        viewModel.setName("  Green jumper ")
+        viewModel.setWarmth(Warmth.WARM)
+        viewModel.toggleSeason(Season.AUTUMN)
+        viewModel.toggleSeason(Season.WINTER)
+
+        val saved = viewModel.save()
+
+        assertEquals("new-id", saved?.id)
+        assertEquals("Green jumper", saved?.name)
+        assertEquals(setOf(Season.AUTUMN, Season.WINTER), saved?.seasons)
+        assertEquals(Warmth.WARM, saved?.warmth)
+        assertEquals(listOf(saved), repository.items.first())
+    }
+}
