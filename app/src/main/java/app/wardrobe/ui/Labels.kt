@@ -7,6 +7,7 @@ import app.wardrobe.domain.model.Garment
 import app.wardrobe.domain.model.ItemColor
 import app.wardrobe.domain.model.Season
 import app.wardrobe.domain.model.Warmth
+import app.wardrobe.domain.model.WeatherCondition
 
 // String resources for the domain enums, so the domain layer has no Android dependencies.
 
@@ -69,4 +70,13 @@ fun Warmth.label(): Int = when (this) {
     Warmth.LIGHT -> R.string.warmth_light
     Warmth.MEDIUM -> R.string.warmth_medium
     Warmth.WARM -> R.string.warmth_warm
+}
+
+@StringRes
+fun WeatherCondition.label(): Int = when (this) {
+    WeatherCondition.CLEAR -> R.string.weather_clear
+    WeatherCondition.PARTLY_CLOUDY -> R.string.weather_partly_cloudy
+    WeatherCondition.CLOUDY -> R.string.weather_cloudy
+    WeatherCondition.RAIN -> R.string.weather_rain
+    WeatherCondition.SNOW -> R.string.weather_snow
 }

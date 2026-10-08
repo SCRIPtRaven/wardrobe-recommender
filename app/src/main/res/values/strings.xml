@@ -66,6 +66,22 @@
     <string name="form_name_error">Enter a name</string>
     <string name="form_seasons_error">Pick at least one season</string>
 
+    <string name="outfits_day">Day</string>
+    <string name="outfits_start_from">Start from</string>
+    <string name="outfits_start_from_hint">Pick the item you want to wear.</string>
+    <string name="outfits_show">Show outfits</string>
+
+    <string name="day_today">Today</string>
+    <string name="day_tomorrow">Tomorrow</string>
+    <string name="weather_place_day">%1$s · %2$s</string>
+    <string name="weather_temperature_range">%1$d° to %2$d°C</string>
+    <string name="weather_precipitation">%1$d%% chance of rain or snow</string>
+    <string name="weather_clear">Clear</string>
+    <string name="weather_partly_cloudy">Partly cloudy</string>
+    <string name="weather_cloudy">Cloudy</string>
+    <string name="weather_rain">Rain</string>
+    <string name="weather_snow">Snow</string>
+
     <string name="outfit_smart_casual">Smart casual</string>
     <string name="outfit_rainy_day">Rainy day</string>
     <string name="outfit_easy_weekend">Easy weekend</string>
