@@ -22,20 +22,20 @@ class ItemDetailScreenshotTest {
     private val jeans = ItemDetailUiState.Loaded(SampleData.items.first { it.id == "dark-jeans" })
 
     @Test
-    fun loaded() = composeRule.captureInTheme { ItemDetailContent(coat, onBack = {}, onEdit = {}, onDelete = {}) }
+    fun loaded() = composeRule.captureInTheme { ItemDetailContent(coat, onBack = {}, onEdit = {}, onStyle = {}, onDelete = {}) }
 
     @Test
     fun loadedDark() = composeRule.captureInTheme(darkTheme = true) {
-        ItemDetailContent(jeans, onBack = {}, onEdit = {}, onDelete = {})
+        ItemDetailContent(jeans, onBack = {}, onEdit = {}, onStyle = {}, onDelete = {})
     }
 
     @Test
     fun deleteDialog() = composeRule.captureScreenInTheme {
-        ItemDetailContent(coat, onBack = {}, onEdit = {}, onDelete = {}, showDeleteDialogInitially = true)
+        ItemDetailContent(coat, onBack = {}, onEdit = {}, onStyle = {}, onDelete = {}, showDeleteDialogInitially = true)
     }
 
     @Test
     fun notFound() = composeRule.captureInTheme {
-        ItemDetailContent(ItemDetailUiState.NotFound, onBack = {}, onEdit = {}, onDelete = {})
+        ItemDetailContent(ItemDetailUiState.NotFound, onBack = {}, onEdit = {}, onStyle = {}, onDelete = {})
     }
 }

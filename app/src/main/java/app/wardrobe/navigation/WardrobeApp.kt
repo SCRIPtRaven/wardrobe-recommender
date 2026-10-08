@@ -37,6 +37,7 @@ import app.wardrobe.R
 import app.wardrobe.domain.model.Garment
 import app.wardrobe.domain.model.ItemColor
 import app.wardrobe.ui.label
+import java.time.LocalDate
 import kotlinx.coroutines.launch
 import app.wardrobe.feature.item.AddItemScreen
 import app.wardrobe.feature.item.AddItemViewModel
@@ -44,6 +45,10 @@ import app.wardrobe.feature.item.EditItemScreen
 import app.wardrobe.feature.item.EditItemViewModel
 import app.wardrobe.feature.item.ItemDetailScreen
 import app.wardrobe.feature.item.ItemDetailViewModel
+import app.wardrobe.feature.outfits.OutfitGeneratorScreen
+import app.wardrobe.feature.outfits.OutfitGeneratorViewModel
+import app.wardrobe.feature.outfits.OutfitResultsScreen
+import app.wardrobe.feature.outfits.OutfitResultsViewModel
 import app.wardrobe.feature.wardrobe.WardrobeScreen
 import app.wardrobe.feature.wardrobe.WardrobeViewModel
 
@@ -107,6 +112,10 @@ fun WardrobeApp(container: AppContainer) {
                 viewModel = viewModel { ItemDetailViewModel(route.itemId, container.wardrobeRepository) },
                 onBack = navigator::goBack,
                 onEdit = { navigator.navigate(EditItemRoute(route.itemId)) },
+                onStyle = {
+                    val today = container.forecast().days.first().date
+                    navigator.navigate(OutfitResultsRoute(route.itemId, today.toEpochDay()))
+                },
                 onDeleted = { item ->
                     navigator.goBack()
                     showMessage(
@@ -126,7 +135,25 @@ fun WardrobeApp(container: AppContainer) {
                 onSaved = { navigator.goBack() },
             )
         }
-        entry<OutfitsRoute> { TabPlaceholder(R.string.tab_outfits) }
+        entry<OutfitsRoute> {
+            OutfitGeneratorScreen(
+                viewModel = viewModel { OutfitGeneratorViewModel(container.wardrobeRepository, container.forecast()) },
+                onShowOutfits = { itemId, date -> navigator.navigate(OutfitResultsRoute(itemId, date.toEpochDay())) },
+            )
+        }
+        entry<OutfitResultsRoute> { route ->
+            OutfitResultsScreen(
+                viewModel = viewModel {
+                    OutfitResultsViewModel(
+                        itemId = route.itemId,
+                        date = LocalDate.ofEpochDay(route.epochDay),
+                        repository = container.wardrobeRepository,
+                        forecast = container.forecast(),
+                    )
+                },
+                onBack = navigator::goBack,
+            )
+        }
         entry<SettingsRoute> { TabPlaceholder(R.string.tab_settings) }
     }
 
@@ -187,7 +214,7 @@ private fun WardrobeNavigationBar(selected: NavKey, onSelect: (NavKey) -> Unit) 
     }
 }
 
-// TODO: replace with the Outfits and Settings screens in plan steps 10 and 12.
+// TODO: replace with the Settings screen in plan step 12.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TabPlaceholder(@StringRes title: Int) {

@@ -21,5 +21,9 @@ data object AddItemRoute : NavKey
 @Serializable
 data class EditItemRoute(val itemId: String) : NavKey
 
+/** Outfits built around one item for one forecast day, given as [java.time.LocalDate.toEpochDay]. */
+@Serializable
+data class OutfitResultsRoute(val itemId: String, val epochDay: Long) : NavKey
+
 /** Bottom bar destinations in display order. Each one keeps its own back stack. */
 val TopLevelRoutes: List<NavKey> = listOf(WardrobeRoute, OutfitsRoute, SettingsRoute)
