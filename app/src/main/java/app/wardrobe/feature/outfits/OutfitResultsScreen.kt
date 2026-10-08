@@ -34,6 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -166,7 +168,11 @@ private fun OutfitCardView(outfit: OutfitCard, anchorId: String, onRate: (String
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text(stringResource(outfit.title), style = MaterialTheme.typography.titleLarge)
+            Text(
+                text = stringResource(outfit.title),
+                modifier = Modifier.semantics { heading() },
+                style = MaterialTheme.typography.titleLarge,
+            )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 outfit.items.forEach { item ->
                     OutfitItemTile(item, isAnchor = item.id == anchorId, modifier = Modifier.weight(1f))

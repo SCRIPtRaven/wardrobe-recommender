@@ -26,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
@@ -124,7 +126,11 @@ fun ItemFormFields(
             }
         }
 
-        Text(stringResource(R.string.item_warmth), style = MaterialTheme.typography.titleSmall)
+        Text(
+            text = stringResource(R.string.item_warmth),
+            modifier = Modifier.semantics { heading() },
+            style = MaterialTheme.typography.titleSmall,
+        )
         SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
             Warmth.entries.forEachIndexed { index, warmth ->
                 SegmentedButton(
@@ -160,7 +166,7 @@ fun ItemFormFields(
 @Composable
 private fun Section(title: String, chips: @Composable () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(title, style = MaterialTheme.typography.titleSmall)
+        Text(title, modifier = Modifier.semantics { heading() }, style = MaterialTheme.typography.titleSmall)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) { chips() }
     }
 }

@@ -38,6 +38,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -51,6 +53,7 @@ import app.wardrobe.ui.components.GarmentImage
 import app.wardrobe.ui.components.WeatherSummary
 import app.wardrobe.ui.components.dayLabel
 import app.wardrobe.ui.components.icon
+import app.wardrobe.ui.label
 import java.time.LocalDate
 
 @Composable
@@ -131,7 +134,11 @@ private fun Generator(
         }
         item(span = { GridItemSpan(maxLineSpan) }) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(stringResource(R.string.outfits_day), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    text = stringResource(R.string.outfits_day),
+                    modifier = Modifier.semantics { heading() },
+                    style = MaterialTheme.typography.titleSmall,
+                )
                 Row(
                     modifier = Modifier.horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -142,9 +149,10 @@ private fun Generator(
                             onClick = { onSelectDay(day.date) },
                             label = { Text(dayLabel(day.date, today)) },
                             leadingIcon = {
+                                // Described, so TalkBack reads each day's weather with its name.
                                 Icon(
                                     painter = painterResource(day.condition.icon()),
-                                    contentDescription = null,
+                                    contentDescription = stringResource(day.condition.label()),
                                     modifier = Modifier.size(FilterChipDefaults.IconSize),
                                 )
                             },
@@ -158,7 +166,11 @@ private fun Generator(
                 modifier = Modifier.padding(top = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
-                Text(stringResource(R.string.outfits_start_from), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    text = stringResource(R.string.outfits_start_from),
+                    modifier = Modifier.semantics { heading() },
+                    style = MaterialTheme.typography.titleSmall,
+                )
                 Text(
                     text = stringResource(R.string.outfits_start_from_hint),
                     style = MaterialTheme.typography.bodyMedium,
