@@ -38,6 +38,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -102,6 +103,18 @@ fun WardrobeContent(
     val gridState = rememberLazyGridState()
     val fabExpanded by remember { derivedStateOf { gridState.firstVisibleItemIndex == 0 } }
 
+    // A filter change should show the new results from the top. The grid would otherwise keep
+    // the previous first item in view by its key. Navigating back keeps the scroll position.
+    var scrollToTopOnNextItems by rememberSaveable { mutableStateOf(false) }
+    if (state is WardrobeUiState.Loaded) {
+        LaunchedEffect(state.items) {
+            if (scrollToTopOnNextItems) {
+                gridState.scrollToItem(0)
+                scrollToTopOnNextItems = false
+            }
+        }
+    }
+
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -138,7 +151,10 @@ fun WardrobeContent(
 
             is WardrobeUiState.Loaded -> Column(Modifier.padding(padding)) {
                 if (state.hasAnyItems) {
-                    CategoryChips(selected = state.filter.category, onSelect = onSelectCategory)
+                    CategoryChips(selected = state.filter.category, onSelect = {
+                        scrollToTopOnNextItems = true
+                        onSelectCategory(it)
+                    })
                 }
                 when {
                     !state.hasAnyItems -> EmptyState(
@@ -154,7 +170,10 @@ fun WardrobeContent(
                         title = stringResource(R.string.wardrobe_no_match_title),
                         body = stringResource(R.string.wardrobe_no_match_body),
                         actionLabel = stringResource(R.string.wardrobe_clear_filters),
-                        onAction = onClearFilters,
+                        onAction = {
+                            scrollToTopOnNextItems = true
+                            onClearFilters()
+                        },
                     )
 
                     else -> LazyVerticalGrid(
@@ -181,9 +200,18 @@ fun WardrobeContent(
     if (showFilters && state is WardrobeUiState.Loaded) {
         FilterSheet(
             state = state,
-            onToggleColor = onToggleColor,
-            onToggleSeason = onToggleSeason,
-            onClearFilters = onClearFilters,
+            onToggleColor = {
+                scrollToTopOnNextItems = true
+                onToggleColor(it)
+            },
+            onToggleSeason = {
+                scrollToTopOnNextItems = true
+                onToggleSeason(it)
+            },
+            onClearFilters = {
+                scrollToTopOnNextItems = true
+                onClearFilters()
+            },
             onDismiss = { showFilters = false },
         )
     }
