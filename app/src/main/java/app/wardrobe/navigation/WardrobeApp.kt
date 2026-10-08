@@ -5,12 +5,9 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -19,8 +16,8 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -28,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -49,6 +47,7 @@ import app.wardrobe.feature.outfits.OutfitGeneratorScreen
 import app.wardrobe.feature.outfits.OutfitGeneratorViewModel
 import app.wardrobe.feature.outfits.OutfitResultsScreen
 import app.wardrobe.feature.outfits.OutfitResultsViewModel
+import app.wardrobe.feature.settings.SettingsScreen
 import app.wardrobe.feature.wardrobe.WardrobeScreen
 import app.wardrobe.feature.wardrobe.WardrobeViewModel
 
@@ -60,7 +59,11 @@ fun WardrobeApp(container: AppContainer) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val resources = LocalResources.current
-    val appResources = LocalContext.current.applicationContext.resources
+    val context = LocalContext.current
+    val appResources = context.applicationContext.resources
+    val versionName = remember(context) {
+        context.packageManager.getPackageInfo(context.packageName, 0).versionName.orEmpty()
+    }
 
     // Application resources, so view models holding this don't hold on to the activity.
     val defaultItemName: (Garment, ItemColor) -> String = remember(appResources) {
@@ -154,7 +157,14 @@ fun WardrobeApp(container: AppContainer) {
                 onBack = navigator::goBack,
             )
         }
-        entry<SettingsRoute> { TabPlaceholder(R.string.tab_settings) }
+        entry<SettingsRoute> {
+            val themeMode by container.themeMode.collectAsStateWithLifecycle()
+            SettingsScreen(
+                themeMode = themeMode,
+                onThemeModeChange = { container.themeMode.value = it },
+                versionName = versionName,
+            )
+        }
     }
 
     Scaffold(
@@ -211,18 +221,5 @@ private fun WardrobeNavigationBar(selected: NavKey, onSelect: (NavKey) -> Unit) 
                 label = { Text(stringResource(tab.label)) },
             )
         }
-    }
-}
-
-// TODO: replace with the Settings screen in plan step 12.
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TabPlaceholder(@StringRes title: Int) {
-    Scaffold(topBar = { TopAppBar(title = { Text(stringResource(title)) }) }) { padding ->
-        Box(
-            Modifier
-                .fillMaxSize()
-                .padding(padding),
-        )
     }
 }
