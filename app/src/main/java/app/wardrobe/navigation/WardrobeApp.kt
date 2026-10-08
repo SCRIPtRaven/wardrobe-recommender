@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -33,7 +34,10 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import app.wardrobe.AppContainer
 import app.wardrobe.R
+import app.wardrobe.ui.label
 import kotlinx.coroutines.launch
+import app.wardrobe.feature.item.AddItemScreen
+import app.wardrobe.feature.item.AddItemViewModel
 import app.wardrobe.feature.item.ItemDetailScreen
 import app.wardrobe.feature.item.ItemDetailViewModel
 import app.wardrobe.feature.wardrobe.WardrobeScreen
@@ -47,6 +51,16 @@ fun WardrobeApp(container: AppContainer) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val resources = LocalResources.current
+    val appResources = LocalContext.current.applicationContext.resources
+
+    /** Shows [message] on the Wardrobe screen and runs [onAction] if the user taps the action. */
+    fun showMessage(message: String, actionLabel: String? = null, onAction: suspend () -> Unit = {}) {
+        scope.launch {
+            val duration = if (actionLabel != null) SnackbarDuration.Long else SnackbarDuration.Short
+            val result = snackbarHostState.showSnackbar(message, actionLabel, duration = duration)
+            if (result == SnackbarResult.ActionPerformed) onAction()
+        }
+    }
 
     val entryProvider = entryProvider<NavKey> {
         entry<WardrobeRoute> {
@@ -54,8 +68,30 @@ fun WardrobeApp(container: AppContainer) {
                 viewModel = viewModel { WardrobeViewModel(container.wardrobeRepository) },
                 snackbarHostState = snackbarHostState,
                 onItemClick = { navigator.navigate(ItemDetailRoute(it)) },
-                // TODO: open the add item screen once plan step 8 adds it.
-                onAddItem = {},
+                onAddItem = { navigator.navigate(AddItemRoute) },
+            )
+        }
+        entry<AddItemRoute> {
+            AddItemScreen(
+                viewModel = viewModel {
+                    AddItemViewModel(
+                        repository = container.wardrobeRepository,
+                        recognize = container.recognizer::recognize,
+                        // Application resources, so the view model doesn't hold on to the activity.
+                        defaultName = { garment, color ->
+                            appResources.getString(
+                                R.string.item_default_name,
+                                appResources.getString(color.label()),
+                                appResources.getString(garment.label()).lowercase(),
+                            )
+                        },
+                    )
+                },
+                onClose = navigator::goBack,
+                onSaved = { item ->
+                    navigator.goBack()
+                    showMessage(resources.getString(R.string.item_added, item.name))
+                },
             )
         }
         entry<ItemDetailRoute> { route ->
@@ -64,14 +100,11 @@ fun WardrobeApp(container: AppContainer) {
                 onBack = navigator::goBack,
                 onDeleted = { item ->
                     navigator.goBack()
-                    scope.launch {
-                        val result = snackbarHostState.showSnackbar(
-                            message = resources.getString(R.string.item_deleted, item.name),
-                            actionLabel = resources.getString(R.string.action_undo),
-                            duration = SnackbarDuration.Long,
-                        )
-                        if (result == SnackbarResult.ActionPerformed) container.wardrobeRepository.add(item)
-                    }
+                    showMessage(
+                        message = resources.getString(R.string.item_deleted, item.name),
+                        actionLabel = resources.getString(R.string.action_undo),
+                        onAction = { container.wardrobeRepository.add(item) },
+                    )
                 },
             )
         }
