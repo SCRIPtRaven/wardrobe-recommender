@@ -66,6 +66,19 @@
     <string name="form_name_error">Enter a name</string>
     <string name="form_seasons_error">Pick at least one season</string>
 
+    <string name="outfit_smart_casual">Smart casual</string>
+    <string name="outfit_rainy_day">Rainy day</string>
+    <string name="outfit_easy_weekend">Easy weekend</string>
+    <string name="reason_neutral_base">Denim, brown and camel are neutrals, so they never clash.</string>
+    <string name="reason_single_accent">The light blue shirt is the only accent color, which keeps the look calm.</string>
+    <string name="reason_coat_for_cold">The warm coat covers cold mornings.</string>
+    <string name="reason_rain_ready">The rain jacket and boots handle a wet day.</string>
+    <string name="reason_earth_tones">Olive, cream and brown are warm earth tones that sit well together.</string>
+    <string name="reason_knit_warmth">The knit adds warmth under the jacket.</string>
+    <string name="reason_accent_on_denim">Burgundy stands out well against dark denim.</string>
+    <string name="reason_light_shoes">White sneakers lighten the darker colors.</string>
+    <string name="reason_mild_day">Light enough for a mild day without a coat.</string>
+
     <string name="category_tops">Tops</string>
     <string name="category_bottoms">Bottoms</string>
     <string name="category_footwear">Footwear</string>
