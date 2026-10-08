@@ -31,6 +31,8 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -59,15 +61,18 @@ import app.wardrobe.ui.components.ItemCard
 import app.wardrobe.ui.label
 import app.wardrobe.ui.pluralLabel
 
+/** @param snackbarHostState shows messages from other screens, such as undo after a delete. */
 @Composable
 fun WardrobeScreen(
     viewModel: WardrobeViewModel,
+    snackbarHostState: SnackbarHostState,
     onItemClick: (itemId: String) -> Unit,
     onAddItem: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     WardrobeContent(
         state = state,
+        snackbarHostState = snackbarHostState,
         onItemClick = onItemClick,
         onAddItem = onAddItem,
         onSelectCategory = viewModel::selectCategory,
@@ -89,6 +94,7 @@ fun WardrobeContent(
     onToggleSeason: (Season) -> Unit,
     onClearFilters: () -> Unit,
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     showFiltersInitially: Boolean = false,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -98,6 +104,7 @@ fun WardrobeContent(
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             LargeTopAppBar(
                 title = { Text(stringResource(R.string.tab_wardrobe)) },

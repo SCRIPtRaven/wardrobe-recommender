@@ -1,6 +1,10 @@
 package app.wardrobe.feature.wardrobe
 
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.test.junit4.createComposeRule
 import app.wardrobe.data.SampleData
 import app.wardrobe.domain.model.Category
@@ -55,8 +59,19 @@ class WardrobeScreenshotTest {
         Wardrobe(allItems.copy(filter = WardrobeFilter(colors = setOf(ItemColor.BLACK))), showFilters = true)
     }
 
+    @Test
+    fun undoSnackbar() = composeRule.captureInTheme {
+        val hostState = remember { SnackbarHostState() }
+        LaunchedEffect(Unit) { hostState.showSnackbar("Black tee deleted", "Undo", duration = SnackbarDuration.Indefinite) }
+        Wardrobe(allItems, snackbarHostState = hostState)
+    }
+
     @Composable
-    private fun Wardrobe(state: WardrobeUiState, showFilters: Boolean = false) {
+    private fun Wardrobe(
+        state: WardrobeUiState,
+        showFilters: Boolean = false,
+        snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    ) {
         WardrobeContent(
             state = state,
             onItemClick = {},
@@ -65,6 +80,7 @@ class WardrobeScreenshotTest {
             onToggleColor = {},
             onToggleSeason = {},
             onClearFilters = {},
+            snackbarHostState = snackbarHostState,
             showFiltersInitially = showFilters,
         )
     }

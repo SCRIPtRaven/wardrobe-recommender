@@ -15,11 +15,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,6 +33,9 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import app.wardrobe.AppContainer
 import app.wardrobe.R
+import kotlinx.coroutines.launch
+import app.wardrobe.feature.item.ItemDetailScreen
+import app.wardrobe.feature.item.ItemDetailViewModel
 import app.wardrobe.feature.wardrobe.WardrobeScreen
 import app.wardrobe.feature.wardrobe.WardrobeViewModel
 
@@ -36,14 +44,35 @@ import app.wardrobe.feature.wardrobe.WardrobeViewModel
 fun WardrobeApp(container: AppContainer) {
     val navigationState = rememberNavigationState(startRoute = WardrobeRoute, topLevelRoutes = TopLevelRoutes)
     val navigator = remember(navigationState) { Navigator(navigationState) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val resources = LocalResources.current
 
     val entryProvider = entryProvider<NavKey> {
         entry<WardrobeRoute> {
             WardrobeScreen(
                 viewModel = viewModel { WardrobeViewModel(container.wardrobeRepository) },
-                // TODO: open the item detail and add item screens once plan steps 7 and 8 add them.
-                onItemClick = {},
+                snackbarHostState = snackbarHostState,
+                onItemClick = { navigator.navigate(ItemDetailRoute(it)) },
+                // TODO: open the add item screen once plan step 8 adds it.
                 onAddItem = {},
+            )
+        }
+        entry<ItemDetailRoute> { route ->
+            ItemDetailScreen(
+                viewModel = viewModel { ItemDetailViewModel(route.itemId, container.wardrobeRepository) },
+                onBack = navigator::goBack,
+                onDeleted = { item ->
+                    navigator.goBack()
+                    scope.launch {
+                        val result = snackbarHostState.showSnackbar(
+                            message = resources.getString(R.string.item_deleted, item.name),
+                            actionLabel = resources.getString(R.string.action_undo),
+                            duration = SnackbarDuration.Long,
+                        )
+                        if (result == SnackbarResult.ActionPerformed) container.wardrobeRepository.add(item)
+                    }
+                },
             )
         }
         entry<OutfitsRoute> { TabPlaceholder(R.string.tab_outfits) }
