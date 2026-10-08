@@ -44,7 +44,8 @@ fun ItemCard(item: ClothingItem, onClick: () -> Unit, modifier: Modifier = Modif
             Text(
                 text = item.name,
                 style = MaterialTheme.typography.titleSmall,
-                maxLines = 1,
+                // Two lines, so names stay readable with large system font sizes.
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
             Row(
