@@ -105,6 +105,18 @@
     <string name="reason_light_shoes">White sneakers lighten the darker colors.</string>
     <string name="reason_mild_day">Light enough for a mild day without a coat.</string>
 
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="settings_coming_later">Coming later</string>
+    <string name="settings_taste_profile">Taste profile</string>
+    <string name="settings_taste_profile_body">What your likes and dislikes teach the app about your style.</string>
+    <string name="settings_later">Later</string>
+    <string name="settings_about">About</string>
+    <string name="settings_about_body">Version %1$s. Outfit suggestions from the clothes you own.</string>
+
     <string name="category_tops">Tops</string>
     <string name="category_bottoms">Bottoms</string>
     <string name="category_footwear">Footwear</string>
