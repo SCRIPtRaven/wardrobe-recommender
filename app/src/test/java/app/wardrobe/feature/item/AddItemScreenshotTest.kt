@@ -62,11 +62,7 @@ class AddItemScreenshotTest {
             step = step,
             onClose = {},
             onChooseSource = {},
-            onNameChange = {},
-            onGarmentChange = {},
-            onColorChange = {},
-            onWarmthChange = {},
-            onSeasonToggle = {},
+            onFormChange = {},
             onSave = {},
             showDiscardDialogInitially = showDiscardDialog,
         )

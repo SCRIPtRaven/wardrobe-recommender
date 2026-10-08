@@ -30,3 +30,36 @@ data class ItemForm(
 
     fun toItem(id: String) = ClothingItem(id, name.trim(), garment, color, warmth, seasons)
 }
+
+/** One edit the user makes in the item form. */
+sealed interface ItemFormChange {
+    data class SetName(val name: String) : ItemFormChange
+    data class SetGarment(val garment: Garment) : ItemFormChange
+    data class SetColor(val color: ItemColor) : ItemFormChange
+    data class SetWarmth(val warmth: Warmth) : ItemFormChange
+    data class ToggleSeason(val season: Season) : ItemFormChange
+}
+
+/**
+ * Applies [change]. While the user hasn't typed a name, [defaultName] renames the item
+ * whenever its garment or color changes.
+ */
+fun ItemForm.apply(change: ItemFormChange, defaultName: (Garment, ItemColor) -> String): ItemForm =
+    when (change) {
+        is ItemFormChange.SetName -> copy(name = change.name, nameEditedByUser = true)
+        is ItemFormChange.SetGarment -> renamed(change.garment, color, defaultName)
+        is ItemFormChange.SetColor -> renamed(garment, change.color, defaultName)
+        is ItemFormChange.SetWarmth -> copy(warmth = change.warmth)
+        is ItemFormChange.ToggleSeason ->
+            copy(seasons = if (change.season in seasons) seasons - change.season else seasons + change.season)
+    }
+
+private fun ItemForm.renamed(
+    garment: Garment,
+    color: ItemColor,
+    defaultName: (Garment, ItemColor) -> String,
+): ItemForm = copy(
+    garment = garment,
+    color = color,
+    name = if (nameEditedByUser) name else defaultName(garment, color),
+)

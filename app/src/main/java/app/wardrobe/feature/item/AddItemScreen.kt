@@ -45,10 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.wardrobe.R
 import app.wardrobe.domain.model.ClothingItem
-import app.wardrobe.domain.model.Garment
-import app.wardrobe.domain.model.ItemColor
-import app.wardrobe.domain.model.Season
-import app.wardrobe.domain.model.Warmth
 import app.wardrobe.ui.components.GarmentBackdrop
 import kotlinx.coroutines.launch
 
@@ -64,11 +60,7 @@ fun AddItemScreen(
         step = step,
         onClose = onClose,
         onChooseSource = viewModel::recognizePhoto,
-        onNameChange = viewModel::setName,
-        onGarmentChange = viewModel::setGarment,
-        onColorChange = viewModel::setColor,
-        onWarmthChange = viewModel::setWarmth,
-        onSeasonToggle = viewModel::toggleSeason,
+        onFormChange = viewModel::update,
         onSave = { scope.launch { viewModel.save()?.let(onSaved) } },
     )
 }
@@ -80,11 +72,7 @@ fun AddItemContent(
     step: AddItemStep,
     onClose: () -> Unit,
     onChooseSource: () -> Unit,
-    onNameChange: (String) -> Unit,
-    onGarmentChange: (Garment) -> Unit,
-    onColorChange: (ItemColor) -> Unit,
-    onWarmthChange: (Warmth) -> Unit,
-    onSeasonToggle: (Season) -> Unit,
+    onFormChange: (ItemFormChange) -> Unit,
     onSave: () -> Unit,
     modifier: Modifier = Modifier,
     showDiscardDialogInitially: Boolean = false,
@@ -126,11 +114,7 @@ fun AddItemContent(
             AddItemStep.Analyzing -> Analyzing(Modifier.padding(padding))
             is AddItemStep.Details -> ItemFormFields(
                 form = step.form,
-                onNameChange = onNameChange,
-                onGarmentChange = onGarmentChange,
-                onColorChange = onColorChange,
-                onWarmthChange = onWarmthChange,
-                onSeasonToggle = onSeasonToggle,
+                onChange = onFormChange,
                 modifier = Modifier
                     .padding(padding)
                     .verticalScroll(rememberScrollState())

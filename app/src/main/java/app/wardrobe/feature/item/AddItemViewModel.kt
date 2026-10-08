@@ -7,7 +7,6 @@ import app.wardrobe.domain.model.ClothingItem
 import app.wardrobe.domain.model.Garment
 import app.wardrobe.domain.model.ItemColor
 import app.wardrobe.domain.model.ItemSuggestion
-import app.wardrobe.domain.model.Season
 import app.wardrobe.domain.model.Warmth
 import java.util.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,17 +58,7 @@ class AddItemViewModel(
         }
     }
 
-    fun setName(name: String) = editForm { it.copy(name = name, nameEditedByUser = true) }
-
-    fun setGarment(garment: Garment) = editForm { it.renamed(garment = garment) }
-
-    fun setColor(color: ItemColor) = editForm { it.renamed(color = color) }
-
-    fun setWarmth(warmth: Warmth) = editForm { it.copy(warmth = warmth) }
-
-    fun toggleSeason(season: Season) = editForm {
-        it.copy(seasons = if (season in it.seasons) it.seasons - season else it.seasons + season)
-    }
+    fun update(change: ItemFormChange) = editForm { it.apply(change, defaultName) }
 
     /** Adds the item and returns it, or shows the form's errors and returns null. */
     suspend fun save(): ClothingItem? {
@@ -80,13 +69,6 @@ class AddItemViewModel(
         }
         return form.toItem(newId()).also { repository.add(it) }
     }
-
-    private fun ItemForm.renamed(garment: Garment = this.garment, color: ItemColor = this.color): ItemForm =
-        copy(
-            garment = garment,
-            color = color,
-            name = if (nameEditedByUser) name else defaultName(garment, color),
-        )
 
     private fun editForm(change: (ItemForm) -> ItemForm) {
         _step.update { step -> if (step is AddItemStep.Details) step.copy(form = change(step.form)) else step }

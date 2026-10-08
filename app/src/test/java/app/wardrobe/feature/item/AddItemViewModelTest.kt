@@ -65,23 +65,23 @@ class AddItemViewModelTest {
     @Test
     fun changingTheColorRenamesWhileTheNameIsUntouched() {
         viewModel.recognizePhoto()
-        viewModel.setColor(ItemColor.NAVY)
+        viewModel.update(ItemFormChange.SetColor(ItemColor.NAVY))
         assertEquals("NAVY SWEATER", form().name)
     }
 
     @Test
     fun aTypedNameIsKept() {
         viewModel.recognizePhoto()
-        viewModel.setName("My jumper")
-        viewModel.setGarment(Garment.COAT)
+        viewModel.update(ItemFormChange.SetName("My jumper"))
+        viewModel.update(ItemFormChange.SetGarment(Garment.COAT))
         assertEquals("My jumper", form().name)
     }
 
     @Test
     fun saveRejectsABlankNameAndShowsErrors() = runTest {
         viewModel.recognizePhoto()
-        viewModel.setName("   ")
-        viewModel.toggleSeason(Season.WINTER)
+        viewModel.update(ItemFormChange.SetName("   "))
+        viewModel.update(ItemFormChange.ToggleSeason(Season.WINTER))
         assertNull(viewModel.save())
         assertTrue(form().showErrors)
         assertTrue(repository.items.first().isEmpty())
@@ -97,10 +97,10 @@ class AddItemViewModelTest {
     @Test
     fun saveAddsTheItemWithATrimmedName() = runTest {
         viewModel.recognizePhoto()
-        viewModel.setName("  Green jumper ")
-        viewModel.setWarmth(Warmth.WARM)
-        viewModel.toggleSeason(Season.AUTUMN)
-        viewModel.toggleSeason(Season.WINTER)
+        viewModel.update(ItemFormChange.SetName("  Green jumper "))
+        viewModel.update(ItemFormChange.SetWarmth(Warmth.WARM))
+        viewModel.update(ItemFormChange.ToggleSeason(Season.AUTUMN))
+        viewModel.update(ItemFormChange.ToggleSeason(Season.WINTER))
 
         val saved = viewModel.save()
 

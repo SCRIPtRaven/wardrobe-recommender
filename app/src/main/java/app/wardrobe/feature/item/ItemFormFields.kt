@@ -44,11 +44,7 @@ import app.wardrobe.ui.label
 @Composable
 fun ItemFormFields(
     form: ItemForm,
-    onNameChange: (String) -> Unit,
-    onGarmentChange: (Garment) -> Unit,
-    onColorChange: (ItemColor) -> Unit,
-    onWarmthChange: (Warmth) -> Unit,
-    onSeasonToggle: (Season) -> Unit,
+    onChange: (ItemFormChange) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -84,7 +80,7 @@ fun ItemFormFields(
         val nameError = form.showErrors && form.nameError
         OutlinedTextField(
             value = form.name,
-            onValueChange = onNameChange,
+            onValueChange = { onChange(ItemFormChange.SetName(it)) },
             modifier = Modifier.fillMaxWidth(),
             label = { Text(stringResource(R.string.form_name)) },
             isError = nameError,
@@ -105,7 +101,7 @@ fun ItemFormFields(
                 val selected = garment == form.garment
                 FilterChip(
                     selected = selected,
-                    onClick = { onGarmentChange(garment) },
+                    onClick = { onChange(ItemFormChange.SetGarment(garment)) },
                     label = { Text(stringResource(garment.label())) },
                     leadingIcon = when {
                         selected -> chipIcon(R.drawable.ic_check)
@@ -120,7 +116,7 @@ fun ItemFormFields(
             ItemColor.entries.forEach { color ->
                 FilterChip(
                     selected = color == form.color,
-                    onClick = { onColorChange(color) },
+                    onClick = { onChange(ItemFormChange.SetColor(color)) },
                     label = { Text(stringResource(color.label())) },
                     leadingIcon = { ColorSwatch(color) },
                     trailingIcon = if (color == form.suggestion?.color) chipIcon(R.drawable.ic_auto_awesome) else null,
@@ -133,7 +129,7 @@ fun ItemFormFields(
             Warmth.entries.forEachIndexed { index, warmth ->
                 SegmentedButton(
                     selected = warmth == form.warmth,
-                    onClick = { onWarmthChange(warmth) },
+                    onClick = { onChange(ItemFormChange.SetWarmth(warmth)) },
                     shape = SegmentedButtonDefaults.itemShape(index, Warmth.entries.size),
                 ) {
                     Text(stringResource(warmth.label()))
@@ -145,7 +141,7 @@ fun ItemFormFields(
             Season.entries.forEach { season ->
                 FilterChip(
                     selected = season in form.seasons,
-                    onClick = { onSeasonToggle(season) },
+                    onClick = { onChange(ItemFormChange.ToggleSeason(season)) },
                     label = { Text(stringResource(season.label())) },
                 )
             }
