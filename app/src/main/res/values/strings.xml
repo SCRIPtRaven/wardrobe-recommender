@@ -82,6 +82,16 @@
     <string name="weather_rain">Rain</string>
     <string name="weather_snow">Snow</string>
 
+    <string name="results_title">Outfit ideas</string>
+    <string name="results_built_around">Built around</string>
+    <string name="results_why">Why it works</string>
+    <string name="results_rate_prompt">How do you like it?</string>
+    <string name="results_like">Like this outfit</string>
+    <string name="results_dislike">Dislike this outfit</string>
+    <string name="results_none_title">No outfit ideas yet</string>
+    <string name="results_none_body">This prototype has outfit ideas only for the sample Dark jeans.</string>
+    <string name="results_style_it">Style it</string>
+
     <string name="outfit_smart_casual">Smart casual</string>
     <string name="outfit_rainy_day">Rainy day</string>
     <string name="outfit_easy_weekend">Easy weekend</string>
