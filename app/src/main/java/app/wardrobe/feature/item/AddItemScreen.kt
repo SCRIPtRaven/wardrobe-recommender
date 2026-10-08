@@ -7,18 +7,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,9 +21,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -94,19 +87,7 @@ fun AddItemContent(
             )
         },
         bottomBar = {
-            if (step is AddItemStep.Details) {
-                Surface(color = MaterialTheme.colorScheme.surfaceContainer) {
-                    Button(
-                        onClick = onSave,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .windowInsetsPadding(WindowInsets.navigationBars)
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                    ) {
-                        Text(stringResource(R.string.add_item_save))
-                    }
-                }
-            }
+            if (step is AddItemStep.Details) SaveBar(stringResource(R.string.add_item_save), onSave)
         },
     ) { padding ->
         when (step) {
@@ -124,25 +105,14 @@ fun AddItemContent(
     }
 
     if (showDiscardDialog) {
-        AlertDialog(
-            onDismissRequest = { showDiscardDialog = false },
-            title = { Text(stringResource(R.string.add_item_discard_title)) },
-            text = { Text(stringResource(R.string.add_item_discard_body)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDiscardDialog = false
-                        onClose()
-                    },
-                ) {
-                    Text(stringResource(R.string.action_discard))
-                }
+        DiscardDialog(
+            title = stringResource(R.string.add_item_discard_title),
+            body = stringResource(R.string.add_item_discard_body),
+            onDiscard = {
+                showDiscardDialog = false
+                onClose()
             },
-            dismissButton = {
-                TextButton(onClick = { showDiscardDialog = false }) {
-                    Text(stringResource(R.string.add_item_keep_editing))
-                }
-            },
+            onKeepEditing = { showDiscardDialog = false },
         )
     }
 }
