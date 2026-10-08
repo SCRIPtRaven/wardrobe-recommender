@@ -37,6 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.wardrobe.R
+import app.wardrobe.ui.components.BottomActionBar
 import app.wardrobe.domain.model.ClothingItem
 import app.wardrobe.ui.components.GarmentBackdrop
 import kotlinx.coroutines.launch
@@ -87,7 +88,7 @@ fun AddItemContent(
             )
         },
         bottomBar = {
-            if (step is AddItemStep.Details) SaveBar(stringResource(R.string.add_item_save), onSave)
+            if (step is AddItemStep.Details) BottomActionBar(stringResource(R.string.add_item_save), onSave)
         },
     ) { padding ->
         when (step) {

@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.wardrobe.R
+import app.wardrobe.ui.components.BottomActionBar
 import app.wardrobe.domain.model.ClothingItem
 import app.wardrobe.ui.components.EmptyState
 import kotlinx.coroutines.launch
@@ -74,7 +75,7 @@ fun EditItemContent(
             )
         },
         bottomBar = {
-            if (state is EditItemUiState.Editing) SaveBar(stringResource(R.string.edit_item_save), onSave)
+            if (state is EditItemUiState.Editing) BottomActionBar(stringResource(R.string.edit_item_save), onSave)
         },
     ) { padding ->
         when (state) {
