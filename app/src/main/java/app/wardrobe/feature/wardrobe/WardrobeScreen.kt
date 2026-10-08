@@ -119,7 +119,8 @@ fun WardrobeContent(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 text = { Text(stringResource(R.string.wardrobe_add_item)) },
-                icon = { Icon(painterResource(R.drawable.ic_add), contentDescription = null) },
+                // The extended button hides its text from accessibility services, so the icon carries the label.
+                icon = { Icon(painterResource(R.drawable.ic_add), stringResource(R.string.wardrobe_add_item)) },
                 onClick = onAddItem,
                 expanded = fabExpanded,
             )
