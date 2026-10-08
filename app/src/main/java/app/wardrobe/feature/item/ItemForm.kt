@@ -31,6 +31,16 @@ data class ItemForm(
     fun toItem(id: String) = ClothingItem(id, name.trim(), garment, color, warmth, seasons)
 }
 
+/** A form holding an existing item's values, as the edit screen starts with. */
+fun ClothingItem.toForm() = ItemForm(
+    name = name,
+    nameEditedByUser = true,
+    garment = garment,
+    color = color,
+    warmth = warmth,
+    seasons = seasons,
+)
+
 /** One edit the user makes in the item form. */
 sealed interface ItemFormChange {
     data class SetName(val name: String) : ItemFormChange
