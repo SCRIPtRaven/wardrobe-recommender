@@ -10,6 +10,8 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_delete">Delete</string>
     <string name="action_undo">Undo</string>
+    <string name="action_close">Close</string>
+    <string name="action_discard">Discard</string>
 
     <string name="wardrobe_add_item">Add item</string>
     <string name="wardrobe_all">All</string>
@@ -37,6 +39,27 @@
     <string name="item_warmth">Warmth</string>
     <string name="item_seasons">Seasons</string>
     <string name="item_seasons_all">All year</string>
+
+    <string name="item_added">%1$s added</string>
+    <string name="item_default_name">%1$s %2$s</string>
+
+    <string name="add_item_title">New item</string>
+    <string name="add_item_camera">Take a photo</string>
+    <string name="add_item_camera_body">Use the camera</string>
+    <string name="add_item_gallery">Choose from gallery</string>
+    <string name="add_item_gallery_body">Pick a photo you already have</string>
+    <string name="add_item_tip">For the best result, photograph one item on a plain background.</string>
+    <string name="add_item_analyzing">Recognizing the item…</string>
+    <string name="add_item_analyzing_body">Looking for its type and main color.</string>
+    <string name="add_item_save">Save to wardrobe</string>
+    <string name="add_item_discard_title">Discard this item?</string>
+    <string name="add_item_discard_body">What you entered will be lost.</string>
+    <string name="add_item_keep_editing">Keep editing</string>
+
+    <string name="form_suggestion_hint">Suggested from your photo. Change anything that is wrong.</string>
+    <string name="form_name">Name</string>
+    <string name="form_name_error">Enter a name</string>
+    <string name="form_seasons_error">Pick at least one season</string>
 
     <string name="category_tops">Tops</string>
     <string name="category_bottoms">Bottoms</string>
