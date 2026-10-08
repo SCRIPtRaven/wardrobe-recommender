@@ -45,7 +45,7 @@ object SampleData {
         ItemSuggestion(Garment.COAT, ItemColor.NAVY),
     )
 
-    /** A week of autumn weather in Vilnius, starting on [today], so the demo always shows current dates. */
+    /** A week of autumn weather in Kaunas, starting on [today], so the demo always shows current dates. */
     fun forecast(today: LocalDate): Forecast {
         val days = listOf(
             Triple(7 to 14, WeatherCondition.PARTLY_CLOUDY, 10),
@@ -64,7 +64,7 @@ object SampleData {
                 precipitationChancePercent = precipitation,
             )
         }
-        return Forecast(location = "Vilnius", days = days)
+        return Forecast(location = "Kaunas", days = days)
     }
 
     private fun item(

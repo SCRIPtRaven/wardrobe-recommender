@@ -41,6 +41,11 @@ class SampleDataTest {
     }
 
     @Test
+    fun forecastIsForKaunas() {
+        assertEquals("Kaunas", SampleData.forecast(LocalDate.of(2026, 10, 7)).location)
+    }
+
+    @Test
     fun forecastMinimumNeverExceedsMaximum() {
         val forecast = SampleData.forecast(LocalDate.of(2026, 10, 7))
         assertTrue(forecast.days.all { it.minTemperatureC <= it.maxTemperatureC })
