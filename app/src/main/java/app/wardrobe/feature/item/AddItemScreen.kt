@@ -1,6 +1,10 @@
 package app.wardrobe.feature.item
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -91,17 +95,25 @@ fun AddItemContent(
             if (step is AddItemStep.Details) BottomActionBar(stringResource(R.string.add_item_save), onSave)
         },
     ) { padding ->
-        when (step) {
-            AddItemStep.ChooseSource -> SourceChoice(onChooseSource, Modifier.padding(padding))
-            AddItemStep.Analyzing -> Analyzing(Modifier.padding(padding))
-            is AddItemStep.Details -> ItemFormFields(
-                form = step.form,
-                onChange = onFormChange,
-                modifier = Modifier
-                    .padding(padding)
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-            )
+        // Cross-fades between steps. Keyed by step type, so editing the form doesn't animate.
+        AnimatedContent(
+            targetState = step,
+            contentKey = { it::class },
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            label = "add item step",
+        ) { current ->
+            when (current) {
+                AddItemStep.ChooseSource -> SourceChoice(onChooseSource, Modifier.padding(padding))
+                AddItemStep.Analyzing -> Analyzing(Modifier.padding(padding))
+                is AddItemStep.Details -> ItemFormFields(
+                    form = current.form,
+                    onChange = onFormChange,
+                    modifier = Modifier
+                        .padding(padding)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                )
+            }
         }
     }
 
