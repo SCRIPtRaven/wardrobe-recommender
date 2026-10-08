@@ -3,6 +3,7 @@ package app.wardrobe.navigation
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.WindowInsets
@@ -17,6 +18,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -29,11 +31,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
 import app.wardrobe.AppContainer
 import app.wardrobe.R
 import app.wardrobe.domain.model.Garment
 import app.wardrobe.domain.model.ItemColor
+import app.wardrobe.ui.components.LocalEntryAnimatedScope
+import app.wardrobe.ui.components.LocalSharedTransitionScope
 import app.wardrobe.ui.label
 import java.time.LocalDate
 import kotlinx.coroutines.launch
@@ -87,12 +92,14 @@ fun WardrobeApp(container: AppContainer) {
 
     val entryProvider = entryProvider<NavKey> {
         entry<WardrobeRoute> {
-            WardrobeScreen(
-                viewModel = viewModel { WardrobeViewModel(container.wardrobeRepository) },
-                snackbarHostState = snackbarHostState,
-                onItemClick = { navigator.navigate(ItemDetailRoute(it)) },
-                onAddItem = { navigator.navigate(AddItemRoute) },
-            )
+            WithEntryAnimation {
+                WardrobeScreen(
+                    viewModel = viewModel { WardrobeViewModel(container.wardrobeRepository) },
+                    snackbarHostState = snackbarHostState,
+                    onItemClick = { navigator.navigate(ItemDetailRoute(it)) },
+                    onAddItem = { navigator.navigate(AddItemRoute) },
+                )
+            }
         }
         entry<AddItemRoute> {
             AddItemScreen(
@@ -111,23 +118,25 @@ fun WardrobeApp(container: AppContainer) {
             )
         }
         entry<ItemDetailRoute> { route ->
-            ItemDetailScreen(
-                viewModel = viewModel { ItemDetailViewModel(route.itemId, container.wardrobeRepository) },
-                onBack = navigator::goBack,
-                onEdit = { navigator.navigate(EditItemRoute(route.itemId)) },
-                onStyle = {
-                    val today = container.forecast().days.first().date
-                    navigator.navigate(OutfitResultsRoute(route.itemId, today.toEpochDay()))
-                },
-                onDeleted = { item ->
-                    navigator.goBack()
-                    showMessage(
-                        message = resources.getString(R.string.item_deleted, item.name),
-                        actionLabel = resources.getString(R.string.action_undo),
-                        onAction = { container.wardrobeRepository.add(item) },
-                    )
-                },
-            )
+            WithEntryAnimation {
+                ItemDetailScreen(
+                    viewModel = viewModel { ItemDetailViewModel(route.itemId, container.wardrobeRepository) },
+                    onBack = navigator::goBack,
+                    onEdit = { navigator.navigate(EditItemRoute(route.itemId)) },
+                    onStyle = {
+                        val today = container.forecast().days.first().date
+                        navigator.navigate(OutfitResultsRoute(route.itemId, today.toEpochDay()))
+                    },
+                    onDeleted = { item ->
+                        navigator.goBack()
+                        showMessage(
+                            message = resources.getString(R.string.item_deleted, item.name),
+                            actionLabel = resources.getString(R.string.action_undo),
+                            onAction = { container.wardrobeRepository.add(item) },
+                        )
+                    },
+                )
+            }
         }
         entry<EditItemRoute> { route ->
             EditItemScreen(
@@ -183,13 +192,18 @@ fun WardrobeApp(container: AppContainer) {
         // Each screen handles the system bar insets that the bottom bar doesn't cover.
         contentWindowInsets = WindowInsets(0),
     ) { padding ->
-        NavDisplay(
-            entries = navigationState.toEntries(entryProvider),
-            onBack = navigator::goBack,
-            modifier = Modifier
-                .padding(padding)
-                .consumeWindowInsets(padding),
-        )
+        SharedTransitionLayout {
+            CompositionLocalProvider(LocalSharedTransitionScope provides this) {
+                NavDisplay(
+                    entries = navigationState.toEntries(entryProvider),
+                    onBack = navigator::goBack,
+                    modifier = Modifier
+                        .padding(padding)
+                        .consumeWindowInsets(padding),
+                    sharedTransitionScope = this,
+                )
+            }
+        }
     }
 }
 
@@ -222,4 +236,10 @@ private fun WardrobeNavigationBar(selected: NavKey, onSelect: (NavKey) -> Unit) 
             )
         }
     }
+}
+
+/** Hands this entry's enter and exit animation to its screen, for shared element transitions. */
+@Composable
+private fun WithEntryAnimation(content: @Composable () -> Unit) {
+    CompositionLocalProvider(LocalEntryAnimatedScope provides LocalNavAnimatedContentScope.current, content = content)
 }

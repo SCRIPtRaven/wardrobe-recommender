@@ -1,7 +1,6 @@
 package app.wardrobe.feature.item
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,7 +36,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -47,8 +45,7 @@ import app.wardrobe.domain.model.ClothingItem
 import app.wardrobe.domain.model.Season
 import app.wardrobe.ui.components.ColorSwatch
 import app.wardrobe.ui.components.EmptyState
-import app.wardrobe.ui.components.GarmentBackdrop
-import app.wardrobe.ui.components.GarmentImage
+import app.wardrobe.ui.components.ItemImage
 import app.wardrobe.ui.label
 import app.wardrobe.ui.pluralLabel
 import kotlinx.coroutines.launch
@@ -155,21 +152,15 @@ private fun ItemDetails(item: ClothingItem, onStyle: () -> Unit, modifier: Modif
             .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Box(
+        ItemImage(
+            item = item,
+            shape = MaterialTheme.shapes.extraLarge,
+            imagePadding = 56.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(1f)
-                .clip(MaterialTheme.shapes.extraLarge)
-                .background(GarmentBackdrop),
-            contentAlignment = Alignment.Center,
-        ) {
-            GarmentImage(
-                garment = item.garment,
-                color = item.color,
-                contentDescription = stringResource(R.string.item_image_description, colorName, garmentName),
-                modifier = Modifier.fillMaxSize(0.7f),
-            )
-        }
+                .aspectRatio(1f),
+            contentDescription = stringResource(R.string.item_image_description, colorName, garmentName),
+        )
         Text(text = item.name, style = MaterialTheme.typography.headlineMedium)
         Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow) {
             Column {
