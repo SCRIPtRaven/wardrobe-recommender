@@ -54,6 +54,7 @@ import kotlinx.coroutines.launch
 fun ItemDetailScreen(
     viewModel: ItemDetailViewModel,
     onBack: () -> Unit,
+    onEdit: () -> Unit,
     onDeleted: (ClothingItem) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -61,6 +62,7 @@ fun ItemDetailScreen(
     ItemDetailContent(
         state = state,
         onBack = onBack,
+        onEdit = onEdit,
         onDelete = { scope.launch { viewModel.delete()?.let(onDeleted) } },
     )
 }
@@ -71,6 +73,7 @@ fun ItemDetailScreen(
 fun ItemDetailContent(
     state: ItemDetailUiState,
     onBack: () -> Unit,
+    onEdit: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
     showDeleteDialogInitially: Boolean = false,
@@ -89,6 +92,9 @@ fun ItemDetailContent(
                 },
                 actions = {
                     if (state is ItemDetailUiState.Loaded) {
+                        IconButton(onClick = onEdit) {
+                            Icon(painterResource(R.drawable.ic_edit), stringResource(R.string.edit_item_title))
+                        }
                         IconButton(onClick = { showDeleteDialog = true }) {
                             Icon(painterResource(R.drawable.ic_delete), stringResource(R.string.item_delete))
                         }

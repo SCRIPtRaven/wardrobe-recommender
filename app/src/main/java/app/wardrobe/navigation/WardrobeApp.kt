@@ -34,10 +34,14 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import app.wardrobe.AppContainer
 import app.wardrobe.R
+import app.wardrobe.domain.model.Garment
+import app.wardrobe.domain.model.ItemColor
 import app.wardrobe.ui.label
 import kotlinx.coroutines.launch
 import app.wardrobe.feature.item.AddItemScreen
 import app.wardrobe.feature.item.AddItemViewModel
+import app.wardrobe.feature.item.EditItemScreen
+import app.wardrobe.feature.item.EditItemViewModel
 import app.wardrobe.feature.item.ItemDetailScreen
 import app.wardrobe.feature.item.ItemDetailViewModel
 import app.wardrobe.feature.wardrobe.WardrobeScreen
@@ -52,6 +56,17 @@ fun WardrobeApp(container: AppContainer) {
     val scope = rememberCoroutineScope()
     val resources = LocalResources.current
     val appResources = LocalContext.current.applicationContext.resources
+
+    // Application resources, so view models holding this don't hold on to the activity.
+    val defaultItemName: (Garment, ItemColor) -> String = remember(appResources) {
+        { garment, color ->
+            appResources.getString(
+                R.string.item_default_name,
+                appResources.getString(color.label()),
+                appResources.getString(garment.label()).lowercase(),
+            )
+        }
+    }
 
     /** Shows [message] on the Wardrobe screen and runs [onAction] if the user taps the action. */
     fun showMessage(message: String, actionLabel: String? = null, onAction: suspend () -> Unit = {}) {
@@ -77,14 +92,7 @@ fun WardrobeApp(container: AppContainer) {
                     AddItemViewModel(
                         repository = container.wardrobeRepository,
                         recognize = container.recognizer::recognize,
-                        // Application resources, so the view model doesn't hold on to the activity.
-                        defaultName = { garment, color ->
-                            appResources.getString(
-                                R.string.item_default_name,
-                                appResources.getString(color.label()),
-                                appResources.getString(garment.label()).lowercase(),
-                            )
-                        },
+                        defaultName = defaultItemName,
                     )
                 },
                 onClose = navigator::goBack,
@@ -98,6 +106,7 @@ fun WardrobeApp(container: AppContainer) {
             ItemDetailScreen(
                 viewModel = viewModel { ItemDetailViewModel(route.itemId, container.wardrobeRepository) },
                 onBack = navigator::goBack,
+                onEdit = { navigator.navigate(EditItemRoute(route.itemId)) },
                 onDeleted = { item ->
                     navigator.goBack()
                     showMessage(
@@ -106,6 +115,15 @@ fun WardrobeApp(container: AppContainer) {
                         onAction = { container.wardrobeRepository.add(item) },
                     )
                 },
+            )
+        }
+        entry<EditItemRoute> { route ->
+            EditItemScreen(
+                viewModel = viewModel {
+                    EditItemViewModel(route.itemId, container.wardrobeRepository, defaultItemName)
+                },
+                onClose = navigator::goBack,
+                onSaved = { navigator.goBack() },
             )
         }
         entry<OutfitsRoute> { TabPlaceholder(R.string.tab_outfits) }
