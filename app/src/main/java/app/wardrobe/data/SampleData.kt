@@ -5,6 +5,7 @@ import app.wardrobe.domain.model.DayForecast
 import app.wardrobe.domain.model.Forecast
 import app.wardrobe.domain.model.Garment
 import app.wardrobe.domain.model.ItemColor
+import app.wardrobe.domain.model.ItemSuggestion
 import app.wardrobe.domain.model.Season
 import app.wardrobe.domain.model.Season.AUTUMN
 import app.wardrobe.domain.model.Season.SPRING
@@ -35,6 +36,13 @@ object SampleData {
         item("denim-jacket", "Denim jacket", Garment.JACKET, ItemColor.BLUE, Warmth.MEDIUM, SPRING, AUTUMN),
         item("olive-rain-jacket", "Olive rain jacket", Garment.JACKET, ItemColor.OLIVE, Warmth.MEDIUM, SPRING, AUTUMN),
         item("camel-coat", "Camel coat", Garment.COAT, ItemColor.CAMEL, Warmth.WARM, AUTUMN, WINTER),
+    )
+
+    /** What the stand-in recognizer "sees" in each new photo, in turn. None of them are in [items]. */
+    val photoSuggestions: List<ItemSuggestion> = listOf(
+        ItemSuggestion(Garment.SWEATER, ItemColor.GREEN),
+        ItemSuggestion(Garment.SNEAKERS, ItemColor.RED),
+        ItemSuggestion(Garment.COAT, ItemColor.NAVY),
     )
 
     /** A week of autumn weather in Vilnius, starting on [today], so the demo always shows current dates. */

@@ -28,6 +28,12 @@ class SampleDataTest {
     }
 
     @Test
+    fun photoSuggestionsAreNotAlreadyInTheWardrobe() {
+        val owned = SampleData.items.map { it.garment to it.color }.toSet()
+        assertTrue(SampleData.photoSuggestions.none { (it.garment to it.color) in owned })
+    }
+
+    @Test
     fun forecastCoversSevenConsecutiveDaysFromToday() {
         val today = LocalDate.of(2026, 10, 7)
         val forecast = SampleData.forecast(today)
